@@ -5,7 +5,7 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { useState } from 'react';
 import { useEffect } from 'react';
-const API_BASE = 'http://localhost:3000';
+// const API_BASE = 'http://localhost:3000';
 
 const statsData = [
   { label: 'Total Users',        value: '12,458',  change: '+12.5%', trend: 'up',   icon: Users,      sub: 'vs last month' },
@@ -78,7 +78,7 @@ export function Dashboard() {
     const fetchStats = async () => {
     try {
         const token = localStorage.getItem('admin_token');
-        const res   = await fetch(`${API_BASE}/users/stats`, {
+        // const res   = await fetch(`${API_BASE}/users/stats`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         const data  = await res.json();

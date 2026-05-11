@@ -1,7 +1,7 @@
 import { act, useEffect, useState } from 'react';
 import { Send, Mail, Users, Clock, CheckCircle2, ChevronDown } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
-const API_BASE = 'http://localhost:3000';
+// const API_BASE = 'http://localhost:3000';
 export function EmailCenter() {
   const { t } = useTheme();
   const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single');
@@ -42,7 +42,7 @@ export function EmailCenter() {
         useEffect(() =>{
         const fetchEmailStats = async () =>{
           const token = localStorage.getItem('admin_token');
-          const res = await fetch (`${API_BASE}/mail/stats`, {
+          // const res = await fetch (`${API_BASE}/mail/stats`, {
             headers: {Authorization: `Bearer ${token}`}
           });
           const data = await res.json();

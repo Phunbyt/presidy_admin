@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, ChevronDown, X, ExternalLink, Loader2 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
-const API_BASE = 'http://localhost:3000';
+// const API_BASE = 'http://localhost:3000';
 
 const avatarColors = [
   'linear-gradient(135deg, #D4A843, #B8882A)',
