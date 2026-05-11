@@ -1,4 +1,4 @@
-import { act, useState } from 'react';
+import { act, useEffect, useState } from 'react';
 import { Send, Mail, Users, Clock, CheckCircle2, ChevronDown } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 const API_BASE = 'http://localhost:3000';
@@ -38,6 +38,18 @@ export function EmailCenter() {
     e.target.style.borderColor = t.inputBorder;
     e.target.style.background = t.inputBg;
   };
+
+        useEffect(() =>{
+        const fetchEmailStats = async () =>{
+          const token = localStorage.getItem('admin_token');
+          const res = await fetch (`${API_BASE}/mail/stats`, {
+            headers: {Authorization: `Bearer ${token}`}
+          });
+          const data = await res.json();
+          setEmailStats(data);
+        }
+        fetchEmailStats();
+      }, [])
 
   const handleSend = async () => {
     setSending(true);
@@ -83,6 +95,8 @@ export function EmailCenter() {
         alert('Bulk email queued successsfully');
         setBulkEmail({subject:'',message:'',segment:''})
       }
+
+
 
     }catch(err){
       console.log(err);
@@ -198,11 +212,11 @@ export function EmailCenter() {
                     onFocus={handleFocus}
                     onBlur={handleBlur}
                   >
-                    <option value="all"        style={{ background: t.selectOptionBg }}>All Users (12,458)</option>
-                    <option value="users"      style={{ background: t.selectOptionBg }}>Users Only (12,116)</option>
-                    <option value="moderators" style={{ background: t.selectOptionBg }}>Moderators Only (342)</option>
-                    <option value="active"     style={{ background: t.selectOptionBg }}>Active Users (9,230)</option>
-                    <option value="inactive"   style={{ background: t.selectOptionBg }}>Inactive Users (3,228)</option>
+                    <option value="all"        style={{ background: t.selectOptionBg }}>All Users ({emailStats.total.toLocaleString()})</option>
+                    <option value="users"      style={{ background: t.selectOptionBg }}>Users Only ({emailStats.users.toLocaleString()})</option>
+                    <option value="moderators" style={{ background: t.selectOptionBg }}>Moderators Only ({emailStats.moderators.toLocaleString()})</option>
+                    <option value="active"     style={{ background: t.selectOptionBg }}>Active Users ({emailStats.active.toLocaleString()})</option>
+                    <option value="inactive"   style={{ background: t.selectOptionBg }}>Inactive Users ({emailStats.inactive.toLocaleString()})</option>
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: t.textMuted }} />
                 </div>

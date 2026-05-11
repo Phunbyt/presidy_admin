@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 import { useTheme } from '../contexts/ThemeContext';
 import { useState } from 'react';
-
+import { useEffect } from 'react';
 const API_BASE = 'http://localhost:3000';
 
 const statsData = [
@@ -70,6 +70,23 @@ export function Dashboard() {
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [userDetail, setUserDetail]     = useState<any | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0, offline: 0 });
+    useEffect(() => {
+    fetchStats();
+    fetchUsers();
+  }, [searchTerm, statusFilter]);
+    const fetchStats = async () => {
+    try {
+        const token = localStorage.getItem('admin_token');
+        const res   = await fetch(`${API_BASE}/users/stats`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const data  = await res.json();
+        setStats(data);
+    } catch (err) {
+        console.error('Failed to fetch stats:', err);
+    }
+  };
 
   const fetchUsers = async () => {
     setLoading(true);
