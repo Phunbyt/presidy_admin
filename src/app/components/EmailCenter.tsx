@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { act, useState } from 'react';
 import { Send, Mail, Users, Clock, CheckCircle2, ChevronDown } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
-
+const API_BASE = 'http://localhost:3000';
 export function EmailCenter() {
   const { t } = useTheme();
   const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single');
   const [singleEmail, setSingleEmail] = useState({ to: '', subject: '', message: '' });
   const [bulkEmail, setBulkEmail] = useState({ subject: '', message: '', segment: 'all' });
   const [sending, setSending] = useState(false);
-
+  const [emailStats, setEmailStats] = useState({total:0, users:0, moderators:0, active:0, inactive:0})
   const inputStyle: React.CSSProperties = {
     width: '100%',
     background: t.inputBg,
@@ -39,12 +39,57 @@ export function EmailCenter() {
     e.target.style.background = t.inputBg;
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     setSending(true);
-    setTimeout(() => {
-      setSending(false);
-      alert('Email functionality will be enabled after Supabase connection');
-    }, 800);
+    const token = localStorage.getItem('admin_token');
+
+    try{
+      if (activeTab === 'single'){
+        if(!singleEmail.to || !singleEmail.subject || !singleEmail.message){
+          alert('Please fill in all fields');
+          return;
+        }
+        await fetch (`${API_BASE}/mail/single`, {
+          method: 'POST',
+          headers:{
+            'Content-Type' :'application/json',
+            Authorization: `Bearer ${token}`
+          }, 
+          body: JSON.stringify({
+            email: singleEmail.to,
+            firstName: singleEmail.to.split('@')[0],
+            subject:singleEmail.subject,
+            message:singleEmail.message,
+          })
+        })
+        alert('Email sent successfully');
+        setSingleEmail({to:'',subject:'',message:''})
+      }else{
+        if(!bulkEmail.subject || !bulkEmail.message){
+          alert('Please fill subject and message')
+        }
+        await fetch (`${API_BASE}/mail/bulk`, {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            Authorization:`Bearer ${token}`
+          },
+          body: JSON.stringify({
+            subject: bulkEmail.subject,
+            message: bulkEmail.message,
+            segment: bulkEmail.segment,
+          })
+        })
+        alert('Bulk email queued successsfully');
+        setBulkEmail({subject:'',message:'',segment:''})
+      }
+
+    }catch(err){
+      console.log(err);
+      alert('Fail to send Email, try again');
+    }finally{
+      setSending(false)
+    }
   };
 
   const recentEmails = [
