@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { act, useEffect, useState } from 'react';
 import { Send, Mail, Users, Clock, CheckCircle2, ChevronDown } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
-
+ const API_BASE = 'http://localhost:3000';
 export function EmailCenter() {
   const { t } = useTheme();
   const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single');
   const [singleEmail, setSingleEmail] = useState({ to: '', subject: '', message: '' });
   const [bulkEmail, setBulkEmail] = useState({ subject: '', message: '', segment: 'all' });
   const [sending, setSending] = useState(false);
-
+  const [emailStats, setEmailStats] = useState({total:0, users:0, moderators:0, active:0, inactive:0})
   const inputStyle: React.CSSProperties = {
     width: '100%',
     background: t.inputBg,
@@ -39,12 +39,71 @@ export function EmailCenter() {
     e.target.style.background = t.inputBg;
   };
 
-  const handleSend = () => {
+        useEffect(() =>{
+        const fetchEmailStats = async () =>{
+          const token = localStorage.getItem('admin_token');
+          const res = await fetch (`${API_BASE}/mail/stats`, {
+            headers: {Authorization: `Bearer ${token}`}
+          });
+          const data = await res.json();
+          setEmailStats(data);
+        }
+        fetchEmailStats();
+      }, [])
+
+  const handleSend = async () => {
     setSending(true);
-    setTimeout(() => {
-      setSending(false);
-      alert('Email functionality will be enabled after Supabase connection');
-    }, 800);
+    const token = localStorage.getItem('admin_token');
+
+    try{
+      if (activeTab === 'single'){
+        if(!singleEmail.to || !singleEmail.subject || !singleEmail.message){
+          alert('Please fill in all fields');
+          return;
+        }
+        await fetch (`${API_BASE}/mail/single`, {
+          method: 'POST',
+          headers:{
+            'Content-Type' :'application/json',
+            Authorization: `Bearer ${token}`
+          }, 
+          body: JSON.stringify({
+            email: singleEmail.to,
+            firstName: singleEmail.to.split('@')[0],
+            subject:singleEmail.subject,
+            message:singleEmail.message,
+          })
+        })
+        alert('Email sent successfully');
+        setSingleEmail({to:'',subject:'',message:''})
+      }else{
+        if(!bulkEmail.subject || !bulkEmail.message){
+          alert('Please fill subject and message')
+        }
+        await fetch (`${API_BASE}/mail/bulk`, {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            Authorization:`Bearer ${token}`
+          },
+          body: JSON.stringify({
+            subject: bulkEmail.subject,
+            message: bulkEmail.message,
+            segment: bulkEmail.segment,
+          })
+        })
+        alert('Bulk email queued successsfully');
+        setBulkEmail({subject:'',message:'',segment:''})
+      }
+
+
+
+    }catch(err){
+      console.log(err);
+      alert('Fail to send Email, try again');
+    }finally{
+      setSending(false)
+    }
   };
 
   const recentEmails = [
@@ -153,11 +212,11 @@ export function EmailCenter() {
                     onFocus={handleFocus}
                     onBlur={handleBlur}
                   >
-                    <option value="all"        style={{ background: t.selectOptionBg }}>All Users (12,458)</option>
-                    <option value="users"      style={{ background: t.selectOptionBg }}>Users Only (12,116)</option>
-                    <option value="moderators" style={{ background: t.selectOptionBg }}>Moderators Only (342)</option>
-                    <option value="active"     style={{ background: t.selectOptionBg }}>Active Users (9,230)</option>
-                    <option value="inactive"   style={{ background: t.selectOptionBg }}>Inactive Users (3,228)</option>
+                    <option value="all"        style={{ background: t.selectOptionBg }}>All Users ({emailStats.total.toLocaleString()})</option>
+                    <option value="users"      style={{ background: t.selectOptionBg }}>Users Only ({emailStats.users.toLocaleString()})</option>
+                    <option value="moderators" style={{ background: t.selectOptionBg }}>Moderators Only ({emailStats.moderators.toLocaleString()})</option>
+                    <option value="active"     style={{ background: t.selectOptionBg }}>Active Users ({emailStats.active.toLocaleString()})</option>
+                    <option value="inactive"   style={{ background: t.selectOptionBg }}>Inactive Users ({emailStats.inactive.toLocaleString()})</option>
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: t.textMuted }} />
                 </div>

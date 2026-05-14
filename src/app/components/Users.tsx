@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, ChevronDown, X, ExternalLink, Loader2 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
-const API_BASE = 'http://localhost:3000';
+ const API_BASE = 'http://localhost:3000';
 
 const avatarColors = [
   'linear-gradient(135deg, #D4A843, #B8882A)',
@@ -23,7 +23,7 @@ export function Users() {
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [userDetail, setUserDetail]     = useState<any | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
-
+  const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0, offline: 0 });
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -63,7 +63,21 @@ export function Users() {
     }
   };
 
+  const fetchStats = async () => {
+    try {
+        const token = localStorage.getItem('admin_token');
+        const res   = await fetch(`${API_BASE}/users/stats`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const data  = await res.json();
+        setStats(data);
+    } catch (err) {
+        console.error('Failed to fetch stats:', err);
+    }
+  };
+
   useEffect(() => {
+    fetchStats();
     fetchUsers();
   }, [searchTerm, statusFilter]);
 
@@ -97,10 +111,10 @@ export function Users() {
       {/* Quick stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: 'Total Users',    value: total.toLocaleString() },
-          { label: 'Active',         value: users.filter((u) => u.isVerified).length.toLocaleString() },
-          { label: 'Inactive',       value: users.filter((u) => !u.isVerified).length.toLocaleString() },
-          { label: 'Offline',        value: users.filter((u) => u.isOffline).length.toLocaleString() },
+          { label: 'Total Users', value: stats.total.toLocaleString() },
+          { label: 'Active',      value: stats.active.toLocaleString() },
+          { label: 'Inactive',    value: stats.inactive.toLocaleString() },
+          { label: 'Offline',     value: stats.offline.toLocaleString() },
         ].map((s) => (
           <div key={s.label} className="rounded-xl px-4 py-3.5" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
             <p className="text-xs" style={{ color: t.textMuted }}>{s.label}</p>
@@ -165,7 +179,7 @@ export function Users() {
               <tbody>
                 {users.map((user, index) => {
                   const name   = `${user.firstName} ${user.lastName}`;
-                  const status = user.isVerified ? 'Active' : 'Inactive';
+                  const status = user.isActive ? 'Active' : 'Inactive';
                   const joined = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '—';
 
                   return (
@@ -276,7 +290,7 @@ export function Users() {
                     },
                     {
                       label: 'Account Status',
-                      value: selectedUser.isVerified ? 'Active' : 'Inactive',
+                      value: selectedUser.isActive ? 'Active' : 'Inactive',
                     },
                     {
                       label: 'Offline User',
