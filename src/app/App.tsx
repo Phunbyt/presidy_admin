@@ -32,11 +32,11 @@ function AppInner() {
 
   return (
     <div
-      className="size-full flex"
+      className="size-full flex flex-col md:flex-row"
       style={{ background: t.bg, fontFamily: 'Inter, sans-serif', transition: 'background 0.2s' }}
     >
       <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} />
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto mt-16 md:mt-0">
         {renderPage()}
       </main>
     </div>

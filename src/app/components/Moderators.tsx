@@ -65,37 +65,37 @@ export function Moderators() {
   };
 
   return (
-    <div className="p-8 space-y-6" style={{ background: t.bg, minHeight: '100%', transition: 'background 0.2s' }}>
+    <div className="p-4 sm:p-6 md:p-8 space-y-6" style={{ background: t.bg, minHeight: '100%', transition: 'background 0.2s' }}>
       {/* Header */}
       <div>
-        <h2 style={{ fontFamily: 'Syne, sans-serif', color: t.text, fontSize: '22px', fontWeight: 700 }}>
+        <h2 style={{ fontFamily: 'Syne, sans-serif', color: t.text, fontSize: 'clamp(18px, 5vw, 22px)', fontWeight: 700 }}>
           Moderator Management
         </h2>
-        <p className="mt-1 text-sm" style={{ color: t.textMuted }}>
+        <p className="mt-1 text-xs sm:text-sm" style={{ color: t.textMuted }}>
           Search, filter, and manage platform moderators
         </p>
       </div>
 
       {/* Quick stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         {[
           { label: 'Total Moderators', value: mockModerators.length },
           { label: 'Active',           value: mockModerators.filter((m) => m.status === 'Active').length },
           { label: 'Users Managed',    value: mockModerators.reduce((s, m) => s + m.userCount, 0).toLocaleString() },
           { label: 'Total Paid Out',   value: `₦${(mockModerators.reduce((s, m) => s + m.totalEarned, 0) / 1000000).toFixed(1)}M` },
         ].map((s) => (
-          <div key={s.label} className="rounded-xl px-4 py-3.5" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
+          <div key={s.label} className="rounded-lg sm:rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
             <p className="text-xs" style={{ color: t.textMuted }}>{s.label}</p>
-            <p className="text-lg font-bold mt-0.5" style={{ fontFamily: 'Syne, sans-serif', color: t.text }}>{s.value}</p>
+            <p className="text-base sm:text-lg font-bold mt-0.5" style={{ fontFamily: 'Syne, sans-serif', color: t.text }}>{s.value}</p>
           </div>
         ))}
       </div>
 
       {/* Table card */}
-      <div className="rounded-xl overflow-hidden" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
+      <div className="rounded-lg sm:rounded-xl overflow-hidden" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
         {/* Filters */}
-        <div className="px-5 py-4 flex flex-wrap gap-3 items-center" style={{ borderBottom: `1px solid ${t.borderSub}` }}>
-          <div className="relative flex-1" style={{ minWidth: '200px' }}>
+        <div className="px-3 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row gap-2 sm:gap-3 items-start sm:items-center" style={{ borderBottom: `1px solid ${t.borderSub}` }}>
+          <div className="relative flex-1 w-full">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: t.textFaint }} />
             <input
               type="text"
@@ -105,11 +105,11 @@ export function Moderators() {
               style={{ ...inputStyle, width: '100%', paddingLeft: '34px', paddingRight: '14px', paddingTop: '8px', paddingBottom: '8px' }}
             />
           </div>
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              style={{ ...inputStyle, appearance: 'none', paddingLeft: '12px', paddingRight: '28px', paddingTop: '8px', paddingBottom: '8px', cursor: 'pointer' } as React.CSSProperties}
+              style={{ ...inputStyle, appearance: 'none', paddingLeft: '12px', paddingRight: '28px', paddingTop: '8px', paddingBottom: '8px', cursor: 'pointer', width: '100%' } as React.CSSProperties}
             >
               <option value="all"      style={{ background: t.selectOptionBg }}>All Status</option>
               <option value="active"   style={{ background: t.selectOptionBg }}>Active</option>
@@ -117,18 +117,18 @@ export function Moderators() {
             </select>
             <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: t.textMuted }} />
           </div>
-          <span className="text-xs ml-auto" style={{ color: t.textFaint }}>
-            {filtered.length} of {mockModerators.length} moderators
+          <span className="text-xs w-full sm:w-auto" style={{ color: t.textFaint }}>
+            {filtered.length} of {mockModerators.length}
           </span>
         </div>
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full text-xs sm:text-sm">
             <thead>
               <tr style={{ borderBottom: `1px solid ${t.borderSub}` }}>
                 {['Moderator', 'Users', 'Status', 'Total Earned', 'Joined', 'Actions'].map((h) => (
-                  <th key={h} className="px-5 py-3 text-left text-xs font-semibold" style={{ color: t.textFaint, letterSpacing: '0.05em' }}>
+                  <th key={h} className="px-3 sm:px-5 py-2 sm:py-3 text-left font-semibold whitespace-nowrap" style={{ color: t.textFaint, letterSpacing: '0.05em', fontSize: '10px' }}>
                     {h.toUpperCase()}
                   </th>
                 ))}
@@ -140,26 +140,26 @@ export function Moderators() {
                   key={mod.id}
                   style={{ borderBottom: index < filtered.length - 1 ? `1px solid ${t.borderSub}` : 'none' }}
                 >
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-3">
+                  <td className="px-3 sm:px-5 py-2 sm:py-3.5">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                        className="w-6 sm:w-8 h-6 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ background: avatarColors[mod.id % avatarColors.length] }}
                       >
                         <span className="text-xs font-bold text-white">{mod.name.charAt(0)}</span>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium" style={{ color: t.text }}>{mod.name}</p>
-                        <p className="text-xs" style={{ color: t.textMuted }}>{mod.email}</p>
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm font-medium truncate" style={{ color: t.text }}>{mod.name}</p>
+                        <p className="text-xs truncate" style={{ color: t.textMuted }}>{mod.email}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-5 py-3.5 text-sm font-medium" style={{ color: t.textSub }}>
+                  <td className="px-3 sm:px-5 py-2 sm:py-3.5 text-xs sm:text-sm font-medium whitespace-nowrap" style={{ color: t.textSub }}>
                     {mod.userCount.toLocaleString()}
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-3 sm:px-5 py-2 sm:py-3.5">
                     <span
-                      className="px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      className="px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap"
                       style={{
                         background: mod.status === 'Active' ? 'rgba(74,222,128,0.1)' : t.surfaceHover,
                         color: mod.status === 'Active' ? '#4ade80' : t.textMuted,
@@ -168,17 +168,18 @@ export function Moderators() {
                       {mod.status}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5">
-                    <span className="text-sm font-semibold" style={{ color: '#D4A843' }}>{fmt(mod.totalEarned)}</span>
+                  <td className="px-3 sm:px-5 py-2 sm:py-3.5 whitespace-nowrap">
+                    <span className="text-xs sm:text-sm font-semibold" style={{ color: '#D4A843' }}>{fmt(mod.totalEarned)}</span>
                   </td>
-                  <td className="px-5 py-3.5 text-xs" style={{ color: t.textMuted }}>{mod.joined}</td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-3 sm:px-5 py-2 sm:py-3.5 text-xs whitespace-nowrap" style={{ color: t.textMuted }}>{mod.joined}</td>
+                  <td className="px-3 sm:px-5 py-2 sm:py-3.5">
                     <button
                       onClick={() => setSelectedMod(mod)}
-                      className="flex items-center gap-1.5 text-xs font-medium transition-opacity hover:opacity-70"
+                      className="flex items-center gap-1.5 text-xs font-medium transition-opacity hover:opacity-70 whitespace-nowrap"
                       style={{ color: '#D4A843' }}
                     >
-                      <span>View Users</span>
+                      <span className="hidden sm:inline">View Users</span>
+                      <span className="sm:hidden">View</span>
                       <Users size={11} />
                     </button>
                   </td>

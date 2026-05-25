@@ -49,37 +49,37 @@ export function Users() {
   };
 
   return (
-    <div className="p-8 space-y-6" style={{ background: t.bg, minHeight: '100%', transition: 'background 0.2s' }}>
+    <div className="p-4 sm:p-6 md:p-8 space-y-6" style={{ background: t.bg, minHeight: '100%', transition: 'background 0.2s' }}>
       {/* Header */}
       <div>
-        <h2 style={{ fontFamily: 'Syne, sans-serif', color: t.text, fontSize: '22px', fontWeight: 700 }}>
+        <h2 style={{ fontFamily: 'Syne, sans-serif', color: t.text, fontSize: 'clamp(18px, 5vw, 22px)', fontWeight: 700 }}>
           User Management
         </h2>
-        <p className="mt-1 text-sm" style={{ color: t.textMuted }}>
+        <p className="mt-1 text-xs sm:text-sm" style={{ color: t.textMuted }}>
           Search, filter, and manage all platform users
         </p>
       </div>
 
       {/* Quick stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         {[
           { label: 'Total Users', value: mockUsers.length.toLocaleString() },
           { label: 'Active',      value: mockUsers.filter((u) => u.status === 'Active').length.toLocaleString() },
           { label: 'Inactive',    value: mockUsers.filter((u) => u.status === 'Inactive').length.toLocaleString() },
           { label: 'Pro Plan',    value: mockUsers.filter((u) => u.plan === 'Pro').length.toLocaleString() },
         ].map((s) => (
-          <div key={s.label} className="rounded-xl px-4 py-3.5" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
+          <div key={s.label} className="rounded-lg sm:rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
             <p className="text-xs" style={{ color: t.textMuted }}>{s.label}</p>
-            <p className="text-lg font-bold mt-0.5" style={{ fontFamily: 'Syne, sans-serif', color: t.text }}>{s.value}</p>
+            <p className="text-base sm:text-lg font-bold mt-0.5" style={{ fontFamily: 'Syne, sans-serif', color: t.text }}>{s.value}</p>
           </div>
         ))}
       </div>
 
       {/* Table card */}
-      <div className="rounded-xl overflow-hidden" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
+      <div className="rounded-lg sm:rounded-xl overflow-hidden" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
         {/* Filters */}
-        <div className="px-5 py-4 flex flex-wrap gap-3 items-center" style={{ borderBottom: `1px solid ${t.borderSub}` }}>
-          <div className="relative flex-1" style={{ minWidth: '200px' }}>
+        <div className="px-3 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row gap-2 sm:gap-3 items-start sm:items-center" style={{ borderBottom: `1px solid ${t.borderSub}` }}>
+          <div className="relative flex-1 w-full sm:w-auto" style={{ minWidth: '0' }}>
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: t.textFaint }} />
             <input
               type="text"
@@ -89,11 +89,11 @@ export function Users() {
               style={{ ...inputStyle, width: '100%', paddingLeft: '34px', paddingRight: '14px', paddingTop: '8px', paddingBottom: '8px' }}
             />
           </div>
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              style={{ ...inputStyle, appearance: 'none', paddingLeft: '12px', paddingRight: '28px', paddingTop: '8px', paddingBottom: '8px', cursor: 'pointer' } as React.CSSProperties}
+              style={{ ...inputStyle, appearance: 'none', paddingLeft: '12px', paddingRight: '28px', paddingTop: '8px', paddingBottom: '8px', cursor: 'pointer', width: '100%' } as React.CSSProperties}
             >
               <option value="all"      style={{ background: t.selectOptionBg }}>All Status</option>
               <option value="active"   style={{ background: t.selectOptionBg }}>Active</option>
@@ -101,11 +101,11 @@ export function Users() {
             </select>
             <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: t.textMuted }} />
           </div>
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <select
               value={moderatorFilter}
               onChange={(e) => setModeratorFilter(e.target.value)}
-              style={{ ...inputStyle, appearance: 'none', paddingLeft: '12px', paddingRight: '28px', paddingTop: '8px', paddingBottom: '8px', cursor: 'pointer' } as React.CSSProperties}
+              style={{ ...inputStyle, appearance: 'none', paddingLeft: '12px', paddingRight: '28px', paddingTop: '8px', paddingBottom: '8px', cursor: 'pointer', width: '100%' } as React.CSSProperties}
             >
               <option value="all" style={{ background: t.selectOptionBg }}>All Moderators</option>
               {uniqueModerators.map((m) => (
@@ -114,18 +114,18 @@ export function Users() {
             </select>
             <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: t.textMuted }} />
           </div>
-          <span className="text-xs ml-auto" style={{ color: t.textFaint }}>
-            {filtered.length} of {mockUsers.length} users
+          <span className="text-xs w-full sm:w-auto" style={{ color: t.textFaint }}>
+            {filtered.length} of {mockUsers.length}
           </span>
         </div>
 
-        {/* Table */}
+        {/* Table - responsive wrapper */}
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full text-xs sm:text-sm">
             <thead>
               <tr style={{ borderBottom: `1px solid ${t.borderSub}` }}>
                 {['User', 'Email', 'Moderator', 'Plan', 'Status', 'Joined', 'Actions'].map((h) => (
-                  <th key={h} className="px-5 py-3 text-left text-xs font-semibold" style={{ color: t.textFaint, letterSpacing: '0.05em' }}>
+                  <th key={h} className="px-3 sm:px-5 py-2 sm:py-3 text-left font-semibold whitespace-nowrap" style={{ color: t.textFaint, letterSpacing: '0.05em', fontSize: '10px' }}>
                     {h.toUpperCase()}
                   </th>
                 ))}
@@ -137,22 +137,22 @@ export function Users() {
                   key={user.id}
                   style={{ borderBottom: index < filtered.length - 1 ? `1px solid ${t.borderSub}` : 'none' }}
                 >
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-3">
+                  <td className="px-3 sm:px-5 py-2.5 sm:py-3.5">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                        className="w-6 sm:w-8 h-6 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ background: avatarColors[user.id % avatarColors.length] }}
                       >
                         <span className="text-xs font-bold text-white">{user.name.charAt(0)}</span>
                       </div>
-                      <span className="text-sm font-medium" style={{ color: t.text }}>{user.name}</span>
+                      <span className="text-xs sm:text-sm font-medium truncate" style={{ color: t.text }}>{user.name}</span>
                     </div>
                   </td>
-                  <td className="px-5 py-3.5 text-sm" style={{ color: t.textMuted }}>{user.email}</td>
-                  <td className="px-5 py-3.5 text-sm" style={{ color: t.textSub }}>{user.moderator}</td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-3 sm:px-5 py-2.5 sm:py-3.5 text-xs sm:text-sm truncate" style={{ color: t.textMuted }}>{user.email}</td>
+                  <td className="px-3 sm:px-5 py-2.5 sm:py-3.5 text-xs sm:text-sm truncate" style={{ color: t.textSub }}>{user.moderator}</td>
+                  <td className="px-3 sm:px-5 py-2.5 sm:py-3.5">
                     <span
-                      className="px-2 py-0.5 rounded text-xs font-medium"
+                      className="px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap"
                       style={{
                         background: user.plan === 'Pro' ? 'rgba(212,168,67,0.12)' : t.surfaceHover,
                         color: user.plan === 'Pro' ? '#D4A843' : t.textMuted,
@@ -161,9 +161,9 @@ export function Users() {
                       {user.plan}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-3 sm:px-5 py-2.5 sm:py-3.5">
                     <span
-                      className="px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      className="px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap"
                       style={{
                         background: user.status === 'Active' ? 'rgba(74,222,128,0.1)' : t.surfaceHover,
                         color: user.status === 'Active' ? '#4ade80' : t.textMuted,
@@ -172,11 +172,11 @@ export function Users() {
                       {user.status}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-xs" style={{ color: t.textMuted }}>{user.joined}</td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-3 sm:px-5 py-2.5 sm:py-3.5 text-xs whitespace-nowrap" style={{ color: t.textMuted }}>{user.joined}</td>
+                  <td className="px-3 sm:px-5 py-2.5 sm:py-3.5">
                     <button
                       onClick={() => setSelectedUser(user)}
-                      className="flex items-center gap-1.5 text-xs font-medium transition-opacity hover:opacity-70"
+                      className="flex items-center gap-1.5 text-xs font-medium transition-opacity hover:opacity-70 whitespace-nowrap"
                       style={{ color: '#D4A843' }}
                     >
                       <span>View</span>
@@ -192,28 +192,28 @@ export function Users() {
 
       {/* User detail modal */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-          <div className="w-full max-w-md rounded-2xl p-6 mx-4" style={{ background: t.surface, border: `1px solid ${t.border}`, boxShadow: '0 24px 64px rgba(0,0,0,0.25)' }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
+          <div className="w-full max-w-md rounded-lg sm:rounded-2xl p-4 sm:p-6" style={{ background: t.surface, border: `1px solid ${t.border}`, boxShadow: '0 24px 64px rgba(0,0,0,0.25)' }}>
             <div className="flex items-start justify-between mb-5">
-              <h3 style={{ fontFamily: 'Syne, sans-serif', color: t.text, fontSize: '17px', fontWeight: 600 }}>User Details</h3>
+              <h3 style={{ fontFamily: 'Syne, sans-serif', color: t.text, fontSize: 'clamp(15px, 4vw, 17px)', fontWeight: 600 }}>User Details</h3>
               <button
                 onClick={() => setSelectedUser(null)}
-                className="w-7 h-7 rounded-md flex items-center justify-center transition-all"
+                className="w-7 h-7 rounded-md flex items-center justify-center transition-all flex-shrink-0"
                 style={{ color: t.textMuted, background: t.surfaceHover }}
               >
                 <X size={14} />
               </button>
             </div>
-            <div className="flex items-center gap-4 mb-6 pb-5" style={{ borderBottom: `1px solid ${t.borderSub}` }}>
+            <div className="flex items-center gap-3 sm:gap-4 mb-6 pb-5" style={{ borderBottom: `1px solid ${t.borderSub}` }}>
               <div
-                className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0"
+                className="w-10 sm:w-14 h-10 sm:h-14 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ background: avatarColors[selectedUser.id % avatarColors.length] }}
               >
-                <span className="text-xl font-bold text-white">{selectedUser.name.charAt(0)}</span>
+                <span className="text-lg sm:text-xl font-bold text-white">{selectedUser.name.charAt(0)}</span>
               </div>
-              <div>
-                <p className="font-semibold" style={{ color: t.text }}>{selectedUser.name}</p>
-                <p className="text-sm" style={{ color: t.textMuted }}>{selectedUser.email}</p>
+              <div className="min-w-0">
+                <p className="font-semibold text-sm truncate" style={{ color: t.text }}>{selectedUser.name}</p>
+                <p className="text-xs truncate" style={{ color: t.textMuted }}>{selectedUser.email}</p>
               </div>
             </div>
             <div className="space-y-3">
@@ -225,7 +225,7 @@ export function Users() {
               ].map((row) => (
                 <div key={row.label} className="flex items-center justify-between py-2" style={{ borderBottom: `1px solid ${t.borderSub}` }}>
                   <span className="text-xs" style={{ color: t.textMuted }}>{row.label}</span>
-                  <span className="text-sm font-medium" style={{ color: t.text }}>{row.value}</span>
+                  <span className="text-sm font-medium truncate" style={{ color: t.text }}>{row.value}</span>
                 </div>
               ))}
             </div>

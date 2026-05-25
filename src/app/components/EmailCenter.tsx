@@ -54,21 +54,21 @@ export function EmailCenter() {
   ];
 
   return (
-    <div className="p-8 space-y-6" style={{ background: t.bg, minHeight: '100%', transition: 'background 0.2s' }}>
+    <div className="p-4 sm:p-6 md:p-8 space-y-6" style={{ background: t.bg, minHeight: '100%', transition: 'background 0.2s' }}>
       {/* Header */}
       <div>
-        <h2 style={{ fontFamily: 'Syne, sans-serif', color: t.text, fontSize: '22px', fontWeight: 700 }}>
+        <h2 style={{ fontFamily: 'Syne, sans-serif', color: t.text, fontSize: 'clamp(18px, 5vw, 22px)', fontWeight: 700 }}>
           Email Center
         </h2>
-        <p className="mt-1 text-sm" style={{ color: t.textMuted }}>
+        <p className="mt-1 text-xs sm:text-sm" style={{ color: t.textMuted }}>
           Send individual or bulk emails to users and moderators
         </p>
       </div>
 
       {/* Compose card */}
-      <div className="rounded-xl overflow-hidden" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
+      <div className="rounded-lg sm:rounded-xl overflow-hidden" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
         {/* Tab bar */}
-        <div className="flex" style={{ borderBottom: `1px solid ${t.border}` }}>
+        <div className="flex overflow-x-auto" style={{ borderBottom: `1px solid ${t.border}` }}>
           {[
             { id: 'single' as const, label: 'Single Email', icon: Mail },
             { id: 'bulk'   as const, label: 'Bulk Email',   icon: Users },
@@ -79,11 +79,12 @@ export function EmailCenter() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className="flex items-center gap-2 px-6 py-4 transition-all relative"
-                style={{ color: isActive ? '#D4A843' : t.textMuted }}
+                className="flex items-center gap-2 px-3 sm:px-6 py-3 sm:py-4 transition-all relative whitespace-nowrap text-sm"
+                style={{ color: isActive ? '#D4A843' : t.textMuted, fontSize: 'clamp(12px, 2vw, 14px)' }}
               >
                 <Icon size={14} />
-                <span className="text-sm font-medium">{tab.label}</span>
+                <span className="font-medium hidden sm:inline">{tab.label}</span>
+                <span className="font-medium sm:hidden text-xs">{tab.label.split(' ')[0]}</span>
                 {isActive && (
                   <div className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t" style={{ background: '#D4A843' }} />
                 )}
@@ -92,7 +93,7 @@ export function EmailCenter() {
           })}
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {activeTab === 'single' ? (
             <div className="space-y-4 max-w-2xl">
               <div>
@@ -125,7 +126,7 @@ export function EmailCenter() {
                   value={singleEmail.message}
                   onChange={(e) => setSingleEmail({ ...singleEmail, message: e.target.value })}
                   placeholder="Write your message..."
-                  rows={7}
+                  rows={5}
                   style={{ ...inputStyle, padding: '10px 14px', resize: 'none' } as React.CSSProperties}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
@@ -134,11 +135,11 @@ export function EmailCenter() {
               <button
                 onClick={handleSend}
                 disabled={sending}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all disabled:opacity-60"
+                className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg transition-all disabled:opacity-60 font-semibold text-sm"
                 style={{ background: 'linear-gradient(135deg, #D4A843, #B8882A)', color: '#000' }}
               >
                 <Send size={14} />
-                <span className="font-semibold text-sm">{sending ? 'Sending...' : 'Send Email'}</span>
+                <span>{sending ? 'Sending...' : 'Send Email'}</span>
               </button>
             </div>
           ) : (
@@ -180,7 +181,7 @@ export function EmailCenter() {
                   value={bulkEmail.message}
                   onChange={(e) => setBulkEmail({ ...bulkEmail, message: e.target.value })}
                   placeholder="Write your message... Use {{name}} for personalization"
-                  rows={7}
+                  rows={5}
                   style={{ ...inputStyle, padding: '10px 14px', resize: 'none' } as React.CSSProperties}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
@@ -196,7 +197,7 @@ export function EmailCenter() {
               <button
                 onClick={handleSend}
                 disabled={sending}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all disabled:opacity-60"
+                className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg transition-all disabled:opacity-60 font-semibold text-sm"
                 style={{ background: 'linear-gradient(135deg, #D4A843, #B8882A)', color: '#000' }}
               >
                 <Send size={14} />
@@ -208,35 +209,35 @@ export function EmailCenter() {
       </div>
 
       {/* Recent emails */}
-      <div className="rounded-xl overflow-hidden" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
-        <div className="px-5 py-4" style={{ borderBottom: `1px solid ${t.borderSub}` }}>
+      <div className="rounded-lg sm:rounded-xl overflow-hidden" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
+        <div className="px-3 sm:px-5 py-3 sm:py-4" style={{ borderBottom: `1px solid ${t.borderSub}` }}>
           <h3 className="text-sm font-semibold" style={{ color: t.text }}>Recent Emails</h3>
         </div>
         <div>
           {recentEmails.map((email, index) => (
             <div
               key={index}
-              className="flex items-center justify-between px-5 py-4"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-3 sm:px-5 py-3 sm:py-4"
               style={{ borderBottom: index < recentEmails.length - 1 ? `1px solid ${t.borderSub}` : 'none' }}
             >
-              <div className="flex items-start gap-3 flex-1 min-w-0">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+              <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                <div className="w-7 sm:w-8 h-7 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
                   style={{ background: 'rgba(212,168,67,0.1)' }}>
                   <Mail size={13} style={{ color: '#D4A843' }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate" style={{ color: t.text }}>{email.subject}</p>
-                  <p className="text-xs mt-0.5" style={{ color: t.textMuted }}>To: {email.recipients}</p>
+                  <p className="text-xs sm:text-sm font-medium truncate" style={{ color: t.text }}>{email.subject}</p>
+                  <p className="text-xs mt-0.5 truncate" style={{ color: t.textMuted }}>To: {email.recipients}</p>
                 </div>
               </div>
-              <div className="text-right ml-6 flex-shrink-0">
-                <div className="flex items-center gap-1.5 justify-end mb-1">
+              <div className="text-left sm:text-right flex-shrink-0">
+                <div className="flex items-center gap-1.5 mb-1">
                   <Clock size={10} style={{ color: t.textFaint }} />
                   <span className="text-xs" style={{ color: t.textFaint }}>{email.sent}</span>
                 </div>
-                <div className="flex items-center gap-2 justify-end">
+                <div className="flex items-center gap-2">
                   <span className="text-xs" style={{ color: t.textMuted }}>{email.opens} opens</span>
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ background: 'rgba(74,222,128,0.1)' }}>
+                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full whitespace-nowrap" style={{ background: 'rgba(74,222,128,0.1)' }}>
                     <CheckCircle2 size={10} style={{ color: '#4ade80' }} />
                     <span className="text-xs font-medium" style={{ color: '#4ade80' }}>{email.status}</span>
                   </div>

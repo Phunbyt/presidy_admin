@@ -1,4 +1,5 @@
-import { Home, Mail, CreditCard, Users, ShieldCheck, UserPlus, LogOut, ChevronRight, Sun, Moon } from 'lucide-react';
+import { useState } from 'react';
+import { Home, Mail, CreditCard, Users, ShieldCheck, UserPlus, LogOut, ChevronRight, Sun, Moon, Menu, X } from 'lucide-react';
 import presidyLogo from '../../imports/presidy.jpg';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -9,6 +10,7 @@ interface SidebarProps {
 
 export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
   const { t, theme, toggleTheme } = useTheme();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const menuItems = [
     { id: 'dashboard',   label: 'Overview',         icon: Home },
@@ -19,15 +21,45 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
     { id: 'add-offline', label: 'Add Offline Users',icon: UserPlus },
   ];
 
+  const handleNavClick = (page: string) => {
+    onNavigate(page);
+    setIsMobileOpen(false);
+  };
+
   return (
-    <div
-      className="w-60 flex flex-col h-full flex-shrink-0"
-      style={{
-        background: t.sidebarBg,
-        borderRight: `1px solid ${t.sidebarBorder}`,
-        transition: 'background 0.2s, border-color 0.2s',
-      }}
-    >
+    <>
+      {/* Mobile hamburger button */}
+      <button
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+        className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-lg transition-colors"
+        style={{ 
+          background: t.surface,
+          border: `1px solid ${t.border}`,
+          color: t.text
+        }}
+        aria-label="Toggle menu"
+      >
+        {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+
+      {/* Mobile overlay */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className="fixed md:relative w-60 flex flex-col h-full flex-shrink-0 z-40 transition-transform duration-300 md:translate-x-0 md:block"
+        style={{
+          background: t.sidebarBg,
+          borderRight: `1px solid ${t.sidebarBorder}`,
+          transition: 'background 0.2s, border-color 0.2s',
+          transform: isMobileOpen ? 'translateX(0)' : 'translateX(-100%)',
+        }}
+      >
       {/* Logo — stacked so the image can breathe */}
       <div className="px-6 pt-7 pb-5 flex flex-col items-start gap-2">
         <div
@@ -64,7 +96,7 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
           return (
             <button
               key={item.id}
-              onClick={() => onNavigate(item.id)}
+              onClick={() => handleNavClick(item.id)}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 group relative"
               style={{
                 background: isActive ? t.navActive : 'transparent',
@@ -96,81 +128,7 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
           );
         })}
       </nav>
-
-      {/* Theme toggle */}
-      <div className="px-4 pb-3">
-        <div
-          className="flex items-center justify-between px-3 py-2.5 rounded-xl"
-          style={{ background: t.surfaceHover, border: `1px solid ${t.borderSub}` }}
-        >
-          <div className="flex items-center gap-2">
-            {theme === 'dark' ? (
-              <Moon size={13} style={{ color: '#D4A843' }} />
-            ) : (
-              <Sun size={13} style={{ color: '#D4A843' }} />
-            )}
-            <span className="text-xs font-medium" style={{ color: t.textMuted }}>
-              {theme === 'dark' ? 'Dark mode' : 'Light mode'}
-            </span>
-          </div>
-
-          {/* Pill toggle */}
-          <button
-            onClick={toggleTheme}
-            className="relative flex-shrink-0 rounded-full transition-all duration-300 focus:outline-none"
-            style={{
-              width: '38px',
-              height: '22px',
-              background: theme === 'dark'
-                ? 'rgba(212,168,67,0.15)'
-                : 'linear-gradient(135deg, #D4A843, #C49830)',
-              border: theme === 'dark' ? '1px solid rgba(212,168,67,0.3)' : '1px solid transparent',
-              boxShadow: theme === 'light' ? '0 2px 8px rgba(212,168,67,0.35)' : 'none',
-            }}
-            aria-label="Toggle theme"
-          >
-            <span
-              className="absolute top-0.5 rounded-full flex items-center justify-center transition-all duration-300"
-              style={{
-                width: '18px',
-                height: '18px',
-                left: theme === 'dark' ? '1px' : '17px',
-                background: theme === 'dark' ? 'rgba(212,168,67,0.8)' : '#fff',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
-              }}
-            >
-              {theme === 'dark' ? (
-                <Moon size={9} style={{ color: '#0C0C0E' }} />
-              ) : (
-                <Sun size={9} style={{ color: '#C49830' }} />
-              )}
-            </span>
-          </button>
-        </div>
       </div>
-
-      {/* Bottom divider */}
-      <div className="mx-4 mb-3" style={{ borderTop: `1px solid ${t.borderSub}` }} />
-
-      {/* Admin profile */}
-      <div className="px-4 pb-6">
-        <div
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg"
-          style={{ background: t.surfaceHover }}
-        >
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, #D4A843, #B8882A)' }}
-          >
-            <span className="text-xs font-bold text-black">A</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate" style={{ color: t.text }}>Admin User</p>
-            <p className="text-xs truncate" style={{ color: t.textFaint }}>admin@presidy.com</p>
-          </div>
-          <LogOut size={13} style={{ color: t.textFaint, flexShrink: 0 }} />
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

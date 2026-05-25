@@ -58,19 +58,19 @@ export function Dashboard() {
   const { t } = useTheme();
 
   return (
-    <div className="p-8 space-y-6 min-h-full" style={{ background: t.bg, transition: 'background 0.2s' }}>
+    <div className="p-4 sm:p-6 md:p-8 space-y-6 min-h-full" style={{ background: t.bg, transition: 'background 0.2s' }}>
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h2 style={{ fontFamily: 'Syne, sans-serif', color: t.text, fontSize: '22px', fontWeight: 700 }}>
+          <h2 style={{ fontFamily: 'Syne, sans-serif', color: t.text, fontSize: 'clamp(18px, 5vw, 22px)', fontWeight: 700 }}>
             Dashboard Overview
           </h2>
-          <p className="mt-1 text-sm" style={{ color: t.textMuted }}>
+          <p className="mt-1 text-xs sm:text-sm" style={{ color: t.textMuted }}>
             Saturday, May 2, 2026 — Welcome back, Admin
           </p>
         </div>
         <div
-          className="flex items-center gap-2 px-3 py-2 rounded-lg"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg flex-shrink-0"
           style={{ background: 'rgba(212,168,67,0.1)', border: '1px solid rgba(212,168,67,0.2)' }}
         >
           <Activity size={13} style={{ color: '#D4A843' }} />
@@ -79,7 +79,7 @@ export function Dashboard() {
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {statsData.map((stat) => {
           const Icon = stat.icon;
           const isUp = stat.trend === 'up';
@@ -87,7 +87,7 @@ export function Dashboard() {
           return (
             <div
               key={stat.label}
-              className="rounded-xl p-5 relative overflow-hidden"
+              className="rounded-xl p-4 sm:p-5 relative overflow-hidden"
               style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s, border-color 0.2s' }}
             >
               <div className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-5 -translate-y-1/2 translate-x-1/2"
@@ -108,7 +108,7 @@ export function Dashboard() {
                 </div>
               </div>
               <p className="text-xs font-medium mb-1" style={{ color: t.textMuted }}>{stat.label}</p>
-              <p className="text-2xl font-bold" style={{ fontFamily: 'Syne, sans-serif', color: t.text }}>{stat.value}</p>
+              <p className="text-lg sm:text-2xl font-bold" style={{ fontFamily: 'Syne, sans-serif', color: t.text }}>{stat.value}</p>
               <p className="text-xs mt-1" style={{ color: t.textFaint }}>{stat.sub}</p>
             </div>
           );
@@ -116,19 +116,19 @@ export function Dashboard() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="rounded-xl p-5" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
-          <div className="flex items-center justify-between mb-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+        <div className="rounded-xl p-4 sm:p-5" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
             <div>
               <h3 className="font-semibold text-sm" style={{ color: t.text }}>User Growth</h3>
               <p className="text-xs mt-0.5" style={{ color: t.textMuted }}>Last 6 months</p>
             </div>
-            <div className="flex items-center gap-1.5 text-xs" style={{ color: '#4ade80' }}>
+            <div className="flex items-center gap-1.5 text-xs flex-shrink-0" style={{ color: '#4ade80' }}>
               <ArrowUpRight size={13} />
               <span>+46.5%</span>
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={userGrowthData}>
               <defs>
                 <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
@@ -137,30 +137,30 @@ export function Dashboard() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={t.chartGrid} vertical={false} />
-              <XAxis dataKey="month" stroke="transparent" tick={{ fontSize: 11, fill: t.chartTick }} axisLine={false} tickLine={false} />
-              <YAxis stroke="transparent" tick={{ fontSize: 11, fill: t.chartTick }} axisLine={false} tickLine={false} width={45} />
+              <XAxis dataKey="month" stroke="transparent" tick={{ fontSize: 10, fill: t.chartTick }} axisLine={false} tickLine={false} />
+              <YAxis stroke="transparent" tick={{ fontSize: 10, fill: t.chartTick }} axisLine={false} tickLine={false} width={35} />
               <Tooltip content={<CustomTooltip />} />
               <Area type="monotone" dataKey="users" stroke="#D4A843" strokeWidth={2} fill="url(#userGradient)" dot={false} activeDot={{ r: 4, fill: '#D4A843', strokeWidth: 0 }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="rounded-xl p-5" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
-          <div className="flex items-center justify-between mb-5">
+        <div className="rounded-xl p-4 sm:p-5" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
             <div>
               <h3 className="font-semibold text-sm" style={{ color: t.text }}>Payment Trends</h3>
               <p className="text-xs mt-0.5" style={{ color: t.textMuted }}>Monthly payouts in ₦</p>
             </div>
-            <div className="flex items-center gap-1.5 text-xs" style={{ color: '#4ade80' }}>
+            <div className="flex items-center gap-1.5 text-xs flex-shrink-0" style={{ color: '#4ade80' }}>
               <ArrowUpRight size={13} />
               <span>+41.3%</span>
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={paymentData} barSize={24}>
+          <ResponsiveContainer width="100%" height={150}>
+            <BarChart data={paymentData} barSize={16}>
               <CartesianGrid strokeDasharray="3 3" stroke={t.chartGrid} vertical={false} />
-              <XAxis dataKey="month" stroke="transparent" tick={{ fontSize: 11, fill: t.chartTick }} axisLine={false} tickLine={false} />
-              <YAxis stroke="transparent" tick={{ fontSize: 11, fill: t.chartTick }} axisLine={false} tickLine={false} width={50} tickFormatter={(v) => `₦${(v / 1000000).toFixed(0)}M`} />
+              <XAxis dataKey="month" stroke="transparent" tick={{ fontSize: 10, fill: t.chartTick }} axisLine={false} tickLine={false} />
+              <YAxis stroke="transparent" tick={{ fontSize: 10, fill: t.chartTick }} axisLine={false} tickLine={false} width={40} tickFormatter={(v) => `₦${(v / 1000000).toFixed(0)}M`} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="amount" fill="#D4A843" radius={[5, 5, 0, 0]} fillOpacity={0.85} />
             </BarChart>
@@ -169,11 +169,11 @@ export function Dashboard() {
       </div>
 
       {/* Recent activity */}
-      <div className="rounded-xl p-5" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
-        <div className="flex items-center justify-between mb-5">
+      <div className="rounded-xl p-4 sm:p-5" style={{ background: t.surface, border: `1px solid ${t.border}`, transition: 'background 0.2s' }}>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
           <h3 className="font-semibold text-sm" style={{ color: t.text }}>Recent Activity</h3>
           <div
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md cursor-pointer flex-shrink-0"
             style={{ background: t.surfaceHover }}
           >
             <Zap size={11} style={{ color: '#D4A843' }} />
@@ -190,14 +190,14 @@ export function Dashboard() {
           ].map((activity, index) => (
             <div
               key={index}
-              className="flex items-center justify-between px-4 py-3 rounded-lg"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-3 sm:px-4 py-3 rounded-lg text-sm"
               style={{ background: index % 2 === 0 ? t.tableStripe : 'transparent' }}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: activity.color }} />
-                <p className="text-sm" style={{ color: t.textSub }}>{activity.action}</p>
+                <p className="text-xs sm:text-sm truncate" style={{ color: t.textSub }}>{activity.action}</p>
               </div>
-              <span className="text-xs flex-shrink-0 ml-4" style={{ color: t.textFaint }}>{activity.time}</span>
+              <span className="text-xs flex-shrink-0 ml-5 sm:ml-0" style={{ color: t.textFaint }}>{activity.time}</span>
             </div>
           ))}
         </div>
