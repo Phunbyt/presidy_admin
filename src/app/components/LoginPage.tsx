@@ -14,7 +14,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   const [error, setError] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -24,27 +24,11 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     }
 
     setLoading(true);
-      try{
-        const response = await fetch('',{
-          method:'POST',
-          headers: {'Content-Type':'application/json'},
-          body:JSON.stringify({email,password})
-        });
-
-        const data = await response.json();
-
-        if(!response.ok){
-          setError(data.message || 'Invalid Credential')
-          return
-        }
-
-        localStorage.setItem('admin_token', data.accessToken);
-        onLogin()
-      }catch(err){
-        setError('Unable to connect to server. Try again');
-      }finally{
-        setLoading(false)
-      }
+    setTimeout(() => {
+      setLoading(false);
+      // Accept any credentials for demo
+      onLogin();
+    }, 1600);
   };
 
   return (

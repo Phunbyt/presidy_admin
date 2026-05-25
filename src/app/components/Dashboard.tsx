@@ -3,9 +3,6 @@ import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { useTheme } from '../contexts/ThemeContext';
-import { useState } from 'react';
-import { useEffect } from 'react';
-// const API_BASE = 'http://localhost:3000';
 
 const statsData = [
   { label: 'Total Users',        value: '12,458',  change: '+12.5%', trend: 'up',   icon: Users,      sub: 'vs last month' },
@@ -60,59 +57,6 @@ function CustomTooltip({ active, payload, label }: any) {
 export function Dashboard() {
   const { t } = useTheme();
 
-
-
-  const [users, setUsers]               = useState<any[]>([]);
-  const [loading, setLoading]           = useState(false);
-  const [total, setTotal]               = useState(0);
-  const [searchTerm, setSearchTerm]     = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedUser, setSelectedUser] = useState<any | null>(null);
-  const [userDetail, setUserDetail]     = useState<any | null>(null);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0, offline: 0 });
-    useEffect(() => {
-    fetchStats();
-    fetchUsers();
-  }, [searchTerm, statusFilter]);
-    const fetchStats = async () => {
-    try {
-        const token = localStorage.getItem('admin_token');
-        // const res   = await fetch(`${API_BASE}/users/stats`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        const data  = await res.json();
-        setStats(data);
-    } catch (err) {
-        console.error('Failed to fetch stats:', err);
-    }
-  };
-
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      const token  = localStorage.getItem('admin_token');
-      const params = new URLSearchParams();
-
-      if (searchTerm) params.append('search', searchTerm);
-      if (statusFilter !== 'all') {
-        params.append('isVerified', statusFilter === 'active' ? 'true' : 'false');
-      }
-
-      const res  = await fetch(`${API_BASE}/users?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-
-      setUsers(data.data ?? []);
-      setTotal(data.total ?? 0);
-    } catch (err) {
-      console.error('Failed to fetch users:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="p-8 space-y-6 min-h-full" style={{ background: t.bg, transition: 'background 0.2s' }}>
       {/* Header */}
@@ -136,13 +80,7 @@ export function Dashboard() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-        {[
-          { label: 'Total Users',        value: total.toLocaleString(),   change: '+12.5%', trend: 'up',   icon: Users,      sub: 'vs last month' },
-          { label: 'Active Moderators',  value: '342',     change: '+8.2%',  trend: 'up',   icon: ShieldCheck, sub: 'vs last month' },
-          { label: 'Emails Sent',        value: '8,234',   change: '-3.1%',  trend: 'down', icon: Mail,       sub: 'vs last month' },
-          { label: 'Total Payouts',      value: '₦45.2M',  change: '+15.3%', trend: 'up',   icon: TrendingUp, sub: 'vs last month' },
-        ].map((stat) => {
+        {statsData.map((stat) => {
           const Icon = stat.icon;
           const isUp = stat.trend === 'up';
           const TrendIcon = isUp ? TrendingUp : TrendingDown;
