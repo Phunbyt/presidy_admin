@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 import { useTheme } from '../contexts/ThemeContext';
 import { useState } from 'react';
-
+import {useEffect} from 'react';
 const API_BASE = 'http://localhost:3000';
 
 const statsData = [
@@ -59,18 +59,19 @@ function CustomTooltip({ active, payload, label }: any) {
 
 export function Dashboard() {
   const { t } = useTheme();
-
-
-
   const [users, setUsers]               = useState<any[]>([]);
   const [loading, setLoading]           = useState(false);
   const [total, setTotal]               = useState(0);
   const [searchTerm, setSearchTerm]     = useState('');
+  const [modTotal, setModTotal] = useState(0);
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedUser, setSelectedUser] = useState<any | null>(null);
-  const [userDetail, setUserDetail]     = useState<any | null>(null);
-  const [detailLoading, setDetailLoading] = useState(false);
+  const [moderators, setModerators]     = useState<any[]>([]);
+   //const [modtotal, setModTotal]               = useState(0);
+  //const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  //const [userDetail, setUserDetail]     = useState<any | null>(null);
+ // const [detailLoading, setDetailLoading] = useState(false);
 
+  
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -95,6 +96,37 @@ export function Dashboard() {
       setLoading(false);
     }
   };
+    const fetchModerators = async () => {
+    setLoading(true);
+    try {
+      const token  = localStorage.getItem('admin_token');
+      const params = new URLSearchParams();
+
+      if (searchTerm) params.append('search', searchTerm);
+      if (statusFilter !== 'all') {
+        params.append('isVerified', statusFilter === 'active' ? 'true' : 'false');
+      }
+
+      const res  = await fetch(`${API_BASE}/moderator?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+
+      setModerators(data.data ?? []);
+      setModTotal(data.total ?? 0);
+    } catch (err) {
+      console.error('Failed to fetch moderators:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+    useEffect(() => {
+      fetchUsers(),
+      fetchModerators();
+      
+    }, [searchTerm, statusFilter]);
+    
 
   return (
     <div className="p-8 space-y-6 min-h-full" style={{ background: t.bg, transition: 'background 0.2s' }}>
@@ -122,7 +154,7 @@ export function Dashboard() {
 
         {[
           { label: 'Total Users',        value: total.toLocaleString(),   change: '+12.5%', trend: 'up',   icon: Users,      sub: 'vs last month' },
-          { label: 'Active Moderators',  value: '342',     change: '+8.2%',  trend: 'up',   icon: ShieldCheck, sub: 'vs last month' },
+          { label: 'Active Moderators',  value: modTotal.toLocaleString(),     change: '+8.2%',  trend: 'up',   icon: ShieldCheck, sub: 'vs last month' },
           { label: 'Emails Sent',        value: '8,234',   change: '-3.1%',  trend: 'down', icon: Mail,       sub: 'vs last month' },
           { label: 'Total Payouts',      value: '₦45.2M',  change: '+15.3%', trend: 'up',   icon: TrendingUp, sub: 'vs last month' },
         ].map((stat) => {

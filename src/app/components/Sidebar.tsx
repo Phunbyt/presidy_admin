@@ -1,7 +1,18 @@
 import { Home, Mail, CreditCard, Users, ShieldCheck, UserPlus, LogOut, ChevronRight, Sun, Moon } from 'lucide-react';
 import presidyLogo from '../../imports/presidy.jpg';
 import { useTheme } from '../contexts/ThemeContext';
+import { LoginPage } from './LoginPage';
 
+function getAdminEmail(): string {
+    const token = localStorage.getItem('admin_token');
+    if (!token) return 'admin@presidy.com';
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.email ?? 'admin@presidy.com';
+    } catch {
+        return 'admin@presidy.com';
+    }
+}
 interface SidebarProps {
   currentPage: string;
   onNavigate: (page: string) => void;
@@ -9,11 +20,11 @@ interface SidebarProps {
 
 export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
   const { t, theme, toggleTheme } = useTheme();
-
+  const adminEmail = getAdminEmail()
   const menuItems = [
     { id: 'dashboard',   label: 'Overview',         icon: Home },
     { id: 'emails',      label: 'Email Center',     icon: Mail },
-    { id: 'payments',    label: 'Payments',         icon: CreditCard },
+ //   { id: 'payments',    label: 'Payments',         icon: CreditCard },
     { id: 'users',       label: 'Users',            icon: Users },
     { id: 'moderators',  label: 'Moderators',       icon: ShieldCheck },
     { id: 'add-offline', label: 'Add Offline Users',icon: UserPlus },
@@ -102,6 +113,8 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
         <div
           className="flex items-center justify-between px-3 py-2.5 rounded-xl"
           style={{ background: t.surfaceHover, border: `1px solid ${t.borderSub}` }}
+
+          
         >
           <div className="flex items-center gap-2">
             {theme === 'dark' ? (
@@ -165,8 +178,8 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
             <span className="text-xs font-bold text-black">A</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate" style={{ color: t.text }}>Admin User</p>
-            <p className="text-xs truncate" style={{ color: t.textFaint }}>admin@presidy.com</p>
+            <p className="text-sm font-medium truncate" style={{ color: t.text }}>Admin </p>
+            <p className="text-xs truncate" style={{ color: t.textFaint }}>{adminEmail}</p>
           </div>
           <LogOut size={13} style={{ color: t.textFaint, flexShrink: 0 }} />
         </div>
