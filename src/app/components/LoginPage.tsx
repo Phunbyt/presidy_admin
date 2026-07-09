@@ -25,7 +25,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
     setLoading(true);
       try{
-        const response = await fetch('http://localhost:3000/auth/login',{
+        const response = await fetch('http://localhost:3000/api/v1/auth/admin-login',{
           method:'POST',
           headers: {'Content-Type':'application/json'},
           body:JSON.stringify({email,password})
@@ -38,7 +38,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           return
         }
 
-        localStorage.setItem('admin_token', data.accessToken);
+        localStorage.setItem('admin_token',data.data?.accessToken ?? data.accessToken);
         onLogin()
       }catch(err){
         setError('Unable to connect to server. Try again');

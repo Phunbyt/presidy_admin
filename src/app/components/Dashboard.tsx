@@ -5,7 +5,7 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { useState } from 'react';
 import {useEffect} from 'react';
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'http://localhost:3000/api/v1';
 
 const statsData = [
   { label: 'Total Users',        value: '12,458',  change: '+12.5%', trend: 'up',   icon: Users,      sub: 'vs last month' },
@@ -83,7 +83,7 @@ export function Dashboard() {
         params.append('isVerified', statusFilter === 'active' ? 'true' : 'false');
       }
 
-      const res  = await fetch(`${API_BASE}/users?${params.toString()}`, {
+      const res  = await fetch(`${API_BASE}/user?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -153,7 +153,7 @@ export function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
         {[
-          { label: 'Total Users',        value: total.toLocaleString(),   change: '+12.5%', trend: 'up',   icon: Users,      sub: 'vs last month' },
+          { label: 'Total Users',        value: (total - modTotal).toLocaleString(),   change: '+12.5%', trend: 'up',   icon: Users,      sub: 'vs last month' },
           { label: 'Active Moderators',  value: modTotal.toLocaleString(),     change: '+8.2%',  trend: 'up',   icon: ShieldCheck, sub: 'vs last month' },
           { label: 'Emails Sent',        value: '8,234',   change: '-3.1%',  trend: 'down', icon: Mail,       sub: 'vs last month' },
           { label: 'Total Payouts',      value: '₦45.2M',  change: '+15.3%', trend: 'up',   icon: TrendingUp, sub: 'vs last month' },

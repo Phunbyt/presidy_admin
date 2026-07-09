@@ -14,6 +14,11 @@ function AppInner() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const { t } = useTheme();
 
+  const handleLogout = () =>{
+    localStorage.removeItem('admin_token');
+    setIsAuthenticated(false);
+  };
+
   if (!isAuthenticated) {
     return <LoginPage onLogin={() => setIsAuthenticated(true)} />;
   }
@@ -35,7 +40,9 @@ function AppInner() {
       className="size-full flex"
       style={{ background: t.bg, fontFamily: 'Inter, sans-serif', transition: 'background 0.2s' }}
     >
-      <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} />
+      <Sidebar currentPage={currentPage} 
+      onNavigate={setCurrentPage} 
+      onLogout = {handleLogout}/>
       <main className="flex-1 overflow-y-auto">
         {renderPage()}
       </main>

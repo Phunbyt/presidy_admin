@@ -1,7 +1,7 @@
 import { Home, Mail, CreditCard, Users, ShieldCheck, UserPlus, LogOut, ChevronRight, Sun, Moon } from 'lucide-react';
 import presidyLogo from '../../imports/presidy.jpg';
 import { useTheme } from '../contexts/ThemeContext';
-import { LoginPage } from './LoginPage';
+//import { LoginPage } from './LoginPage';
 
 function getAdminEmail(): string {
     const token = localStorage.getItem('admin_token');
@@ -16,9 +16,10 @@ function getAdminEmail(): string {
 interface SidebarProps {
   currentPage: string;
   onNavigate: (page: string) => void;
+  onLogout: () => void;
 }
 
-export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
+export function Sidebar({ currentPage, onNavigate, onLogout }: SidebarProps) {
   const { t, theme, toggleTheme } = useTheme();
   const adminEmail = getAdminEmail()
   const menuItems = [
@@ -175,13 +176,16 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
             className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ background: 'linear-gradient(135deg, #D4A843, #B8882A)' }}
           >
-            <span className="text-xs font-bold text-black">A</span>
+            <span className="text-xs font-bold text-black">
+              {adminEmail.charAt(0).toUpperCase()}
+            </span>
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate" style={{ color: t.text }}>Admin </p>
             <p className="text-xs truncate" style={{ color: t.textFaint }}>{adminEmail}</p>
           </div>
-          <LogOut size={13} style={{ color: t.textFaint, flexShrink: 0 }} />
+          <LogOut size={13} style={{ color: t.textFaint, flexShrink: 0, cursor:'pointer' }}
+          onClick={onLogout} />
         </div>
       </div>
     </div>
