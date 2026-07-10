@@ -6,7 +6,7 @@ import { PlanLogo, Plan } from './PlanLogo';
 const API_BASE = 'http://localhost:3000/api/v1';
 const KNOWN_PLANS: Plan[] = ['Spotify', 'Apple Music', 'YouTube Music'];
 const PER_PAGE_OPTIONS = [5, 10, 25, 50];
-
+const unwrap = (res: any) => res?.data ?? res;
 function safePlan(name?: string | null): Plan | null {
   return name && KNOWN_PLANS.includes(name as Plan) ? (name as Plan) : null;
 }
@@ -76,7 +76,8 @@ export function Users() {
     const fetchModeratorsList = async () => {
       try {
         const res  = await fetch(`${API_BASE}/moderator?limit=1000`, { headers: { Authorization: `Bearer ${token}` } });
-        const data = await res.json();
+        const data= await res.json();
+        //const data = unwrap(raw)
         setModeratorsList(data.data ?? []);
       } catch (err) {
         console.error('Failed to fetch moderators:', err);
@@ -88,7 +89,7 @@ export function Users() {
       try {
         const res  = await fetch(`${API_BASE}/user/stats`, { headers: { Authorization: `Bearer ${token}` } });
         const data = await res.json();
-        setStats(data);
+        setStats(data.data ?? data);
       } catch (err) {
         console.error('Failed to fetch user stats:', err);
       }

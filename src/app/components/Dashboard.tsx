@@ -6,6 +6,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useState } from 'react';
 import {useEffect} from 'react';
 const API_BASE = 'http://localhost:3000/api/v1';
+const unwrap = (res: any) => res?.data ?? res;
 
 const statsData = [
   { label: 'Total Users',        value: '12,458',  change: '+12.5%', trend: 'up',   icon: Users,      sub: 'vs last month' },
@@ -86,8 +87,8 @@ export function Dashboard() {
       const res  = await fetch(`${API_BASE}/user?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-
+      const raw = await res.json();
+      const data = unwrap(raw)
       setUsers(data.data ?? []);
       setTotal(data.total ?? 0);
     } catch (err) {
@@ -110,7 +111,8 @@ export function Dashboard() {
       const res  = await fetch(`${API_BASE}/moderator?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
+      const raw = await res.json();
+      const data = unwrap(raw)
 
       setModerators(data.data ?? []);
       setModTotal(data.total ?? 0);
@@ -121,12 +123,12 @@ export function Dashboard() {
     }
   };
 
-    useEffect(() => {
-      fetchUsers(),
-      fetchModerators();
-      
-    }, [searchTerm, statusFilter]);
-    
+useEffect(() => {
+    const init = async () => {
+        await Promise.all([fetchUsers(), fetchModerators()]);
+    };
+    init();
+}, []);
 
   return (
     <div className="p-8 space-y-6 min-h-full" style={{ background: t.bg, transition: 'background 0.2s' }}>
