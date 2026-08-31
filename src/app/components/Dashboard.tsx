@@ -72,8 +72,8 @@ export function Dashboard() {
   //const [userDetail, setUserDetail]     = useState<any | null>(null);
  // const [detailLoading, setDetailLoading] = useState(false);
 
-  
-  const fetchUsers = async () => {
+
+const fetchUsers = async () => {
     setLoading(true);
     try {
       const token  = localStorage.getItem('admin_token');
@@ -88,16 +88,21 @@ export function Dashboard() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const raw = await res.json();
-      const data = unwrap(raw)
-      setUsers(data.data ?? []);
-      setTotal(data.total ?? 0);
+      
+      // Stop using the unwrap() function here. Just access the raw response.
+      const usersArray = raw.data ?? [];
+      setUsers(usersArray);
+      
+      // Look for raw.total, fallback to the array length if the interceptor swallowed it
+      setTotal(raw.total ?? usersArray.length);
     } catch (err) {
       console.error('Failed to fetch users:', err);
     } finally {
       setLoading(false);
     }
   };
-    const fetchModerators = async () => {
+
+  const fetchModerators = async () => {
     setLoading(true);
     try {
       const token  = localStorage.getItem('admin_token');
@@ -112,17 +117,16 @@ export function Dashboard() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const raw = await res.json();
-      const data = unwrap(raw)
-
-      setModerators(data.data ?? []);
-      setModTotal(data.total ?? 0);
+      
+      const modsArray = raw.data ?? [];
+      setModerators(modsArray);
+      setModTotal(raw.total ?? modsArray.length);
     } catch (err) {
       console.error('Failed to fetch moderators:', err);
     } finally {
       setLoading(false);
     }
   };
-
 useEffect(() => {
     const init = async () => {
         await Promise.all([fetchUsers(), fetchModerators()]);

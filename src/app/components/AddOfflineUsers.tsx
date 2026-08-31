@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { X, UserPlus, Phone, Mail, User, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { X, UserPlus, Phone, Mail, User, CheckCircle2, AlertCircle, Loader2, Clock } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { PlanLogo, Plan } from './PlanLogo';
 
+const unwrap = (res: any) => res?.data ?? res;
 const API_BASE = 'http://localhost:3000/api/v1';
 const KNOWN_PLANS: Plan[] = ['Spotify', 'Apple Music', 'YouTube Music'];
 const DEFAULT_FAMILY_LIMIT = 5;
+const DURATION_OPTIONS = ['1 Month', '2 Months', '3 Months', '6 Months', '1 Year', '2 Years'];
 
 function safePlan(name?: string | null): Plan | null {
   return name && KNOWN_PLANS.includes(name as Plan) ? (name as Plan) : null;
@@ -33,6 +35,8 @@ function FamilyDots({ count, max }: { count: number; max: number }) {
   );
 }
 
+const EMPTY_FORM = { name: '', phone: '', email: '', duration: '' };
+
 export function AddOfflineUsers() {
   const { t } = useTheme();
 
@@ -43,7 +47,7 @@ export function AddOfflineUsers() {
   const [planFilter, setPlanFilter] = useState<string>('all'); // 'all' | plan name
 
   const [addingTo, setAddingTo]     = useState<any | null>(null);
-  const [form, setForm]             = useState({ name: '', phone: '', email: '' });
+  const [form, setForm]             = useState(EMPTY_FORM);
   const [formError, setFormError]   = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [addedName, setAddedName]   = useState('');
@@ -100,9 +104,9 @@ export function AddOfflineUsers() {
 
   const handleAddMember = async () => {
     setFormError('');
-
-    if (!form.name.trim())  { setFormError('Full name is required.'); return; }
-    if (!form.phone.trim()) { setFormError('Phone number is required.'); return; }
+    if (!form.name.trim())     { setFormError('Full name is required.'); return; }
+    if (!form.phone.trim())    { setFormError('Phone number is required.'); return; }
+    if (!form.duration.trim()) { setFormError('Subscription duration is required.'); return; }
     if (!addingTo) return;
 
     const limit = addingTo.familyMembersLimit ?? DEFAULT_FAMILY_LIMIT;
@@ -112,13 +116,14 @@ export function AddOfflineUsers() {
     }
 
     const [firstName, ...rest] = form.name.trim().split(' ');
-    const lastName  = rest.join(' ') || '';
-    const email     = form.email.trim() || `${firstName.toLowerCase()}.${lastName.toLowerCase() || 'user'}.${Date.now()}@presidy.offline`;
+    const lastName = rest.join(' ') || '';
+    const email = form.email.trim()
+      || `${firstName.toLowerCase()}.${lastName.toLowerCase() || 'user'}.${Date.now()}@presidy.offline`;
 
     setSubmitting(true);
     try {
       const token = localStorage.getItem('admin_token');
-      const res   = await fetch(`${API_BASE}/users/offline`, {
+      const res   = await fetch(`${API_BASE}/user/offline`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -130,23 +135,23 @@ export function AddOfflineUsers() {
           email,
           phoneNumber: form.phone.trim(),
           moderatorId: addingTo._id,
+          subscriptionDuration: form.duration,
         }),
       });
 
-      const data = await res.json();
+      const raw = await res.json();
 
       if (!res.ok) {
-        setFormError(data.message || 'Failed to add member. Please try again.');
+        setFormError(unwrap(raw)?.message ?? 'Failed to add member. Please try again.');
         return;
       }
 
       setAddedName(form.name.trim());
-      setForm({ name: '', phone: '', email: '' });
+      setForm(EMPTY_FORM);
       setAddingTo(null);
       setTimeout(() => setAddedName(''), 3500);
 
-      // refresh family rosters so counts/cards reflect the new member
-      fetchModerators();
+      fetchModerators(); // refresh so the family counts/cards update
     } catch (err) {
       console.error(err);
       setFormError('Failed to connect to the server.');
@@ -321,7 +326,7 @@ export function AddOfflineUsers() {
                               </span>
                             </div>
                             <button
-                              onClick={() => { setAddingTo(mod); setForm({ name: '', phone: '', email: '' }); setFormError(''); }}
+                              onClick={() => { setAddingTo(mod); setForm(EMPTY_FORM); setFormError(''); }}
                               disabled={full || status === 'Inactive'}
                               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                               style={{
@@ -355,6 +360,11 @@ export function AddOfflineUsers() {
                                       {user.firstName} {user.lastName}
                                     </p>
                                     <p className="text-[10px] truncate" style={{ color: t.textMuted }}>{user.phoneNumber || user.email}</p>
+                                    {user.subscriptionDuration && (
+                                      <p className="text-[9px] truncate" style={{ color: t.textFaint }}>
+                                        {user.subscriptionDuration}
+                                      </p>
+                                    )}
                                   </div>
                                   <span
                                     className="text-[9px] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0"
@@ -462,6 +472,32 @@ export function AddOfflineUsers() {
                   onFocus={(e) => { e.target.style.borderColor = t.inputBorderFocus; }}
                   onBlur={(e)  => { e.target.style.borderColor = t.inputBorder; }}
                 />
+              </div>
+
+              <div>
+                <label className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider mb-2" style={{ color: t.textMuted }}>
+                  <Clock size={10} /> Subscription Duration <span style={{ color: '#f87171' }}>*</span>
+                </label>
+                <select
+                  value={form.duration}
+                  onChange={(e) => setForm({ ...form, duration: e.target.value })}
+                  style={{
+                    ...inputStyle,
+                    appearance: 'none',
+                    cursor: 'pointer',
+                    paddingRight: '36px',
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'right 12px center',
+                  }}
+                  onFocus={(e) => { e.target.style.borderColor = t.inputBorderFocus; }}
+                  onBlur={(e)  => { e.target.style.borderColor = t.inputBorder; }}
+                >
+                  <option value="" disabled style={{ background: t.surface, color: t.textFaint }}>Select duration…</option>
+                  {DURATION_OPTIONS.map((d) => (
+                    <option key={d} value={d} style={{ background: t.surface, color: t.text }}>{d}</option>
+                  ))}
+                </select>
               </div>
 
               {formError && (

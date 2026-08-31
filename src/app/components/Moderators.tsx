@@ -2,13 +2,38 @@ import { useState, useEffect } from 'react';
 import { Search, ChevronDown, X, CreditCard, Phone, Mail, Calendar, Loader2 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { PlanLogo, Plan } from './PlanLogo';
-
+const unwrap = (res: any) => res?.data ?? res;
 const API_BASE = 'http://localhost:3000/api/v1';
 const KNOWN_PLANS: Plan[] = ['Spotify', 'Apple Music', 'YouTube Music'];
 const DEFAULT_FAMILY_LIMIT = 5;
 
 function safePlan(name?: string | null): Plan | null {
   return name && KNOWN_PLANS.includes(name as Plan) ? (name as Plan) : null;
+}
+
+// Builds a wa.me link from a raw phone number.
+// Strips everything but digits, then normalizes Nigerian local numbers
+// (e.g. "08012345678" -> "2348012345678") since wa.me needs the full country code.
+function toWhatsAppLink(phone?: string | null): string | null {
+  if (!phone) return null;
+  const digits = phone.replace(/\D/g, '');
+  if (!digits) return null;
+
+  const withCountryCode = digits.startsWith('0')
+    ? `234${digits.slice(1)}`   // local format -> country code
+    : digits;                   // already has a country code
+
+  return `https://wa.me/${withCountryCode}`;
+}
+
+// lucide-react has no WhatsApp glyph (it only ships generic icons), so this is
+// a minimal inline SVG of the WhatsApp mark, sized/colored like any other icon here.
+function WhatsAppIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="#4ade80" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.87.5 3.62 1.44 5.14L2 22l5.09-1.53a9.87 9.87 0 0 0 4.95 1.34h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm0 18.1h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.02.91.9-2.94-.2-.31a8.2 8.2 0 0 1-1.26-4.42c0-4.53 3.69-8.22 8.23-8.22 2.2 0 4.26.86 5.81 2.41a8.16 8.16 0 0 1 2.41 5.81c0 4.53-3.69 8.22-8.22 8.22Zm4.5-6.16c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.78.97-.15.16-.29.18-.54.06-1.45-.72-2.4-1.29-3.36-2.92-.25-.44.25-.41.72-1.36.08-.16.04-.3-.04-.42-.08-.12-.51-1.23-.7-1.69-.19-.44-.38-.38-.52-.39h-.44c-.15 0-.39.06-.6.3-.2.25-.79.77-.79 1.87s.81 2.16 .92 2.31c.12.16 1.6 2.44 3.89 3.33 1.93.75 2.32.6 2.74.56.42-.04 1.36-.56 1.55-1.1.19-.55.19-1.02.13-1.11-.06-.1-.23-.16-.48-.28Z"/>
+    </svg>
+  );
 }
 
 const avatarColors = [
@@ -107,27 +132,32 @@ export function Moderators() {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchModerators();
   }, [searchTerm, statusFilter, planFilter]);
 
-  const fetchModeratorDetail = async (id: string) => {
+
+const fetchModeratorDetail = async (id: string) => {
     setDetailLoading(true);
     try {
       const token = localStorage.getItem('admin_token');
       const res   = await fetch(`${API_BASE}/moderator/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data  = await res.json();
-      setModDetail(data);
+      const raw  = await res.json();
+      
+      // FIX: Extract the nested 'data' object
+      const actualData = raw.data ?? raw;
+      setModDetail(actualData);
+      
     } catch (err) {
       console.error('Failed to fetch moderator detail:', err);
     } finally {
       setDetailLoading(false);
     }
   };
-
   const handleViewMod = (mod: any) => {
     setSelectedMod(mod);
     fetchModeratorDetail(mod._id);
@@ -264,7 +294,21 @@ export function Moderators() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 text-xs" style={{ color: t.textSub }}>{mod.phoneNumber || '—'}</td>
+                      <td className="px-5 py-3.5 text-xs" style={{ color: t.textSub }}>
+                        {mod.phoneNumber ? (
+                          <a
+                            href={toWhatsAppLink(mod.phoneNumber)!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 hover:underline"
+                            style={{ color: t.textSub }}
+                            title="Message on WhatsApp"
+                          >
+                            <WhatsAppIcon size={14} />
+                            {mod.phoneNumber}
+                          </a>
+                        ) : '—'}
+                      </td>
                       <td className="px-5 py-3.5">
                         {plan ? <PlanLogo plan={plan} /> : <span className="text-xs" style={{ color: t.textFaint }}>—</span>}
                       </td>
@@ -383,7 +427,21 @@ export function Moderators() {
                         </div>
                         <div>
                           <span className="text-[10px] uppercase tracking-wider" style={{ color: t.textFaint }}>{label}</span>
-                          <p className="text-xs font-medium" style={{ color: t.textSub }}>{value}</p>
+                          {label === 'Phone' && selectedMod.phoneNumber ? (
+                            <a
+                              href={toWhatsAppLink(selectedMod.phoneNumber)!}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs font-medium hover:underline flex items-center gap-1.5"
+                              style={{ color: t.textSub }}
+                              title="Message on WhatsApp"
+                            >
+                              <WhatsAppIcon size={13} />
+                              {value}
+                            </a>
+                          ) : (
+                            <p className="text-xs font-medium" style={{ color: t.textSub }}>{value}</p>
+                          )}
                         </div>
                       </div>
                     ))}
