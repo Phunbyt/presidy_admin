@@ -3,7 +3,7 @@ import { Search, ChevronDown, X, CreditCard, Phone, Mail, Calendar, Loader2 } fr
 import { useTheme } from '../contexts/ThemeContext';
 import { PlanLogo, Plan } from './PlanLogo';
 const unwrap = (res: any) => res?.data ?? res;
-const API_BASE = 'http://localhost:3000/api/v1';
+const API_BASE = 'https://api.presidy.com/api/v1';
 const KNOWN_PLANS: Plan[] = ['Spotify', 'Apple Music', 'YouTube Music'];
 const DEFAULT_FAMILY_LIMIT = 5;
 

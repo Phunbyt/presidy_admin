@@ -5,7 +5,7 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { useState } from 'react';
 import {useEffect} from 'react';
-const API_BASE = 'http://localhost:3000/api/v1';
+const API_BASE = 'https://api.presidy.com/api/v1';
 const unwrap = (res: any) => res?.data ?? res;
 
 const statsData = [

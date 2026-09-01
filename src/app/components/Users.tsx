@@ -3,7 +3,7 @@ import { Search, ChevronDown, ChevronLeft, ChevronRight, X, ExternalLink, Phone,
 import { useTheme } from '../contexts/ThemeContext';
 import { PlanLogo, Plan } from './PlanLogo';
 
-const API_BASE = 'http://localhost:3000/api/v1';
+const API_BASE = 'https://api.presidy.com/api/v1';
 const KNOWN_PLANS: Plan[] = ['Spotify', 'Apple Music', 'YouTube Music'];
 const PER_PAGE_OPTIONS = [5, 10, 25, 50];
 const unwrap = (res: any) => res?.data ?? res;

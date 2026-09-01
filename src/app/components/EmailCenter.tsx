@@ -3,7 +3,7 @@ import { Send, Mail, Users, Clock, CheckCircle2, Search, X, UserCheck, ShieldChe
 import { useTheme } from '../contexts/ThemeContext';
 import { PlanLogo, Plan } from './PlanLogo';
 
-const API_BASE = 'http://localhost:3000/api/v1';
+const API_BASE = 'https://api.presidy.com/api/v1';
 const KNOWN_PLANS: Plan[] = ['Spotify', 'Apple Music', 'YouTube Music'];
 
 function safePlan(name?: string | null): Plan | null {
